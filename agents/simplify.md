@@ -1,7 +1,7 @@
 ---
 name: simplify
 description: Reviews code for over-engineering, unnecessary complexity, and poor developer experience.
-model: claude-sonnet-4-20250514
+model: claude-opus-4-5-20251101
 color: orange
 ---
 

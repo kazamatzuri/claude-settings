@@ -1,7 +1,7 @@
 ---
 name: design-review
 description: Comprehensive design review for UI changes using Playwright for automated testing.
-model: claude-sonnet-4-20250514
+model: claude-opus-4-5-20251101
 color: pink
 tools:
   - mcp__playwright__browser_navigate

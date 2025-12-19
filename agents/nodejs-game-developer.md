@@ -1,7 +1,7 @@
 ---
 name: nodejs-game-developer
 description: Expert in full-stack Node.js game development, real-time systems, and multiplayer architecture.
-model: claude-sonnet-4-20250514
+model: claude-opus-4-5-20251101
 color: yellow
 ---
 

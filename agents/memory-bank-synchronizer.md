@@ -1,7 +1,7 @@
 ---
 name: memory-bank-synchronizer
 description: Synchronizes memory bank documentation with actual codebase implementation.
-model: claude-sonnet-4-20250514
+model: claude-opus-4-5-20251101
 color: cyan
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: scrum-master
 description: Translates high-level plans into actionable development tickets and epics.
-model: claude-sonnet-4-20250514
+model: claude-opus-4-5-20251101
 color: blue
 ---
 

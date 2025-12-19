@@ -1,7 +1,7 @@
 ---
 name: qa-requirements-validator
 description: Validates that completed work fully satisfies all specified requirements.
-model: claude-sonnet-4-20250514
+model: claude-opus-4-5-20251101
 color: purple
 ---
 
