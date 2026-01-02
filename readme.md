@@ -109,6 +109,22 @@ design reviewer comes from here: https://github.com/OneRedOak/claude-code-workfl
   - Focuses on safety, incremental progress, and maintainability
   - Usage: `/refactor-code`
 
+## Claude Code Skills
+
+### `python-nix-uv`
+
+Automatically sets up Python projects with nix/direnv and uv for seamless environment management. Claude will invoke this skill when you ask to create a new Python project or set up a Python environment.
+
+**Features:**
+- Creates `flake.nix` configured to provide uv
+- Sets up `.envrc` for direnv integration
+- Generates or reads `pyproject.toml` to determine Python version
+- Configures uv to manage Python installations (via `UV_PYTHON_PREFERENCE=only-managed`)
+- Auto-syncs dependencies on directory entry
+- Updates `.gitignore` with appropriate entries
+
+**Usage:** Simply ask Claude to "set up a new Python project" or "create a Python environment with nix and uv"
+
 ## Claude Code Plan Weekly Rate Limits
 
 If you are using Claude monthly subscription plans for Claude Code, new weekly rate limits will apply from August 28, 2025 in addition to max 50x 5hr session limits per month:
