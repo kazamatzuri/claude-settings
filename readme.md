@@ -14,15 +14,6 @@ Large swaths have been takem from terma: https://github.com/bfollington/terma/tr
   - Includes constraint optimization, bias detection, and extended thinking budget management
   - Usage: `/apply-thinking-to @/path/to/prompt-file.md`
 
-- **`/convert-to-todowrite-tasklist-prompt`** - Converts complex, context-heavy prompts into efficient TodoWrite tasklist-based methods with parallel subagent execution
-  - Achieves 60-70% speed improvements through parallel processing
-  - Transforms verbose workflows into specialized task delegation
-  - Prevents context overflow through strategic file selection (max 5 files per task)
-  - Usage: `/convert-to-todowrite-tasklist-prompt @/path/to/original-slash-command.md`
-
-- **`/update-memory-bank`** - Simple command to update CLAUDE.md and memory bank files
-  - Usage: `/update-memory-bank`
-
 ### `/ccusage` Commands
 
 - **`/ccusage-daily`** - Generates comprehensive Claude Code usage cost analysis and statistics
@@ -31,24 +22,6 @@ Large swaths have been takem from terma: https://github.com/bfollington/terma/tr
   - Creates detailed tables showing daily costs, token usage, and model statistics
   - Includes usage insights, recommendations, and cost management analysis
   - Usage: `/ccusage-daily`
-
-### `/cleanup` Commands
-
-- **`/cleanup-context`** - Memory bank optimization specialist for reducing token usage in documentation
-  - Removes duplicate content and eliminates obsolete files
-  - Consolidates overlapping documentation while preserving essential information
-  - Implements archive strategies for historical documentation
-  - Achieves 15-25% token reduction through systematic optimization
-  - Usage: `/cleanup-context`
-
-### `/documentation` Commands
-
-- **`/create-readme-section`** - Generate specific sections for README files with professional formatting
-  - Creates well-structured sections like Installation, Usage, API Reference, Contributing, etc.
-  - Follows markdown best practices with proper headings, code blocks, and formatting
-  - Analyzes project context to provide relevant content
-  - Matches existing README style and tone
-  - Usage: `/create-readme-section "Create an installation section for my Python project"`
 
 ### `/security` Commands
 
@@ -75,15 +48,6 @@ Large swaths have been takem from terma: https://github.com/bfollington/terma/tr
   - Example prompt injection prompts at `.claude/commands/security/test-examples` that you can run `/secure-prompts` against.
   - Example generated report for `/secure-prompts .claude/commands/security/test-examples/test-encoding-attacks.md` [here](reports/secure-prompts/security-analysis_20250719_072359.md)
 
-### `/architecture` Commands
-
-- **`/explain-architecture-pattern`** - Identify and explain architectural patterns in the codebase
-  - Analyzes project structure and identifies design patterns
-  - Explains rationale behind architectural decisions
-  - Provides visual representations with diagrams
-  - Shows concrete implementation examples
-  - Usage: `/explain-architecture-pattern`
-
 ### `/promptengineering` Commands
 
 - **`/convert-to-test-driven-prompt`** - Transform requests into Test-Driven Development style prompts
@@ -99,16 +63,6 @@ Large swaths have been takem from terma: https://github.com/bfollington/terma/tr
   - Integrates with TodoWrite for task management
   - Includes validation steps between batch operations
   - Usage: `/batch-operations-prompt "Update all API calls to use new auth header"`
-
-### `/refactor` Commands
-
-- **`/refactor-code`** - Analysis-only refactoring specialist that creates comprehensive refactoring plans without modifying code
-  - Analyzes code complexity, test coverage, and architectural patterns
-  - Identifies safe extraction points and refactoring opportunities
-  - Creates detailed step-by-step refactoring plans with risk assessment
-  - Generates timestamped reports in `reports/refactor/` directory
-  - Focuses on safety, incremental progress, and maintainability
-  - Usage: `/refactor-code`
 
 ## Claude Code Skills
 
