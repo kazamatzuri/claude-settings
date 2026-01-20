@@ -2,6 +2,7 @@
 Some of the files were taken from: https://github.com/centminmod/my-claude-code-setup
 design reviewer comes from here: https://github.com/OneRedOak/claude-code-workflows
 also thanks to Jeff for the second-opinion command.
+Large swaths have been takem from terma: https://github.com/bfollington/terma/tree/main
 
 ## Claude Code Slash Commands
 
