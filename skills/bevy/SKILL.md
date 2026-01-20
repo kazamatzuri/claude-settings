@@ -20,14 +20,18 @@ Invoke this skill when:
 
 ## Before You Start: Essential Bevy Tips
 
-### ⚠️ Bevy 0.17 Breaking Changes
+### Bevy 0.18 Key Patterns
 
-**If working with Bevy 0.17**, be aware of significant API changes:
-- Material handles now wrapped in `MeshMaterial3d<T>` (not `Handle<T>`)
-- Event system replaced with observer pattern (`commands.trigger()`, `add_observer()`)
-- Color arithmetic operations removed (use component extraction)
+**Important API patterns for Bevy 0.18:**
 
-**See `references/bevy_specific_tips.md` for complete Bevy 0.17 migration guide and examples.**
+- Material handles wrapped in `MeshMaterial3d<T>`
+- Use observer pattern for events (`commands.trigger()`, `add_observer()`)
+- `BorderRadius` is a field on `Node`, not a separate component
+- `LineHeight` is a separate component, not part of `TextFont`
+- `RenderTarget` is a separate component on cameras
+- Use `GlobalAmbientLight` resource for global ambient lighting
+
+**See `references/bevy_specific_tips.md` for detailed Bevy 0.18 patterns and examples.**
 
 ### Consult Bevy Registry Examples First
 
@@ -35,7 +39,7 @@ Invoke this skill when:
 
 **Location:**
 ```bash
-~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy-0.17.1/examples
+~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy-0.18.0/examples
 ```
 
 There are MANY examples covering all aspects of Bevy development. Review relevant examples to understand best practices and working patterns.

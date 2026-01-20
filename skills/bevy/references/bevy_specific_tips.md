@@ -1,18 +1,13 @@
 # Bevy-Specific Development Tips
 
-## Bevy 0.17 Specific Changes
-
-**Important:** Bevy 0.17 introduced several breaking API changes. If you encounter compilation errors related to materials, events, or colors, refer to this section.
+## Bevy 0.18 API Patterns
 
 ### Material Component Wrapper
 
-In Bevy 0.17, material handles are wrapped in `MeshMaterial3d<T>`:
+Material handles are wrapped in `MeshMaterial3d<T>`:
 
 ```rust
-// ❌ Bevy 0.15/0.16 - This will fail in 0.17
-Query<&Handle<StandardMaterial>>
-
-// ✅ Bevy 0.17 - Use the wrapper component
+// Query materials using the wrapper
 Query<&MeshMaterial3d<StandardMaterial>>
 
 // Access the inner handle with .0
@@ -26,99 +21,182 @@ fn update_materials(
         }
     }
 }
+
+// Spawn with material
+commands.spawn((
+    Mesh3d(mesh_handle),
+    MeshMaterial3d(material_handle),
+    Transform::default(),
+));
 ```
 
-**Error symptoms:**
-- `Handle<StandardMaterial> is not a Component`
-- Query trait bounds not satisfied
+### Observer Pattern for Events
 
-**Solution:** Always use `MeshMaterial3d<T>` wrapper when querying material components.
-
-### Observer Pattern (Replaces Events)
-
-Bevy 0.17 introduces observers as a replacement for the event system:
+Bevy 0.18 uses observers for event handling:
 
 ```rust
-// ❌ Old event pattern (Bevy 0.15/0.16)
-#[derive(Event)]
-struct SpellCastEvent { spell_name: String }
-
-app.add_event::<SpellCastEvent>()
-   .add_systems(Update, handle_spell_cast);
-
-fn handle_spell_cast(mut events: EventReader<SpellCastEvent>) {
-    for event in events.read() {
-        info!("Cast: {}", event.spell_name);
-    }
-}
-
-fn cast_spell(mut events: EventWriter<SpellCastEvent>) {
-    events.send(SpellCastEvent { spell_name: "Fireball".into() });
-}
-
-// ✅ Bevy 0.17 observer pattern
 #[derive(Event, Clone)]  // Must derive Clone!
 struct SpellCastEvent { spell_name: String }
 
-app.add_observer(handle_spell_cast);  // Observer, not system
+// Register observer (not a system)
+app.add_observer(handle_spell_cast);
 
+// Handler receives Trigger<T>
 fn handle_spell_cast(
-    trigger: Trigger<SpellCastEvent>,  // Trigger parameter
+    trigger: Trigger<SpellCastEvent>,
     // ... other system params
 ) {
     let event = trigger.event();
     info!("Cast: {}", event.spell_name);
 }
 
+// Trigger events through commands
 fn cast_spell(mut commands: Commands) {
     commands.trigger(SpellCastEvent { spell_name: "Fireball".into() });
 }
 ```
 
-**Key differences:**
-- Events **must derive `Clone`** in addition to `Event`
-- Use `add_observer(handler)` instead of `add_event()` + `add_systems()`
-- Handler takes `Trigger<T>` as first parameter, use `.event()` to access data
-- Trigger with `commands.trigger()` instead of `EventWriter::send()`
-- Observers are not systems - they're called directly when triggered
+### Entity API
 
-**Error symptoms:**
-- `MyEvent is not a Message`
-- `method 'send' not found for MessageWriter`
-- `method 'read' not found`
+```rust
+// Get entity index
+let index = entity.index();  // Returns EntityIndex
 
-**Solution:** Migrate to the observer pattern as shown above.
+// Error handling for entity operations
+match world.get_entity(entity) {
+    Ok(Some(location)) => { /* entity exists */ }
+    Ok(None) => { /* entity doesn't exist */ }
+    Err(InvalidEntityError) => { /* invalid entity id */ }
+}
+```
+
+### UI Components
+
+**BorderRadius is a field on Node:**
+```rust
+commands.spawn((
+    Node {
+        width: Val::Px(100.0),
+        height: Val::Px(100.0),
+        border_radius: BorderRadius::all(Val::Px(8.0)),
+        ..default()
+    },
+    BackgroundColor(Color::WHITE),
+));
+```
+
+**LineHeight is a separate component:**
+```rust
+commands.spawn((
+    Text::new("Hello World"),
+    TextFont { font_size: 16.0, ..default() },
+    TextColor(Color::WHITE),
+    LineHeight::Relative(1.2),  // Separate component
+));
+```
+
+### Camera Setup
+
+**RenderTarget is a separate component:**
+```rust
+// Rendering to an image
+commands.spawn((
+    Camera3d::default(),
+    Camera::default(),
+    RenderTarget::Image(image_handle),
+));
+
+// Default window rendering
+commands.spawn((
+    Camera3d::default(),
+    Camera::default(),
+    // RenderTarget defaults to window
+));
+```
+
+### Lighting
+
+**GlobalAmbientLight resource for scene-wide ambient:**
+```rust
+app.insert_resource(GlobalAmbientLight {
+    color: Color::WHITE,
+    brightness: 0.2,
+});
+
+// AmbientLight component for entity-specific ambient
+commands.spawn(AmbientLight {
+    color: Color::srgb(0.9, 0.9, 1.0),
+    brightness: 0.3,
+});
+```
+
+### Animation
+
+**AnimationTarget uses split components:**
+```rust
+commands.spawn((
+    AnimationTargetId(target_id),
+    AnimatedBy(animation_player_entity),
+    // ... other components
+));
+```
+
+### State Management
+
+**Use set_if_neq() to avoid redundant transitions:**
+```rust
+// This fires OnExit/OnEnter even if already in Playing state
+next_state.set(GameState::Playing);
+
+// This only fires if state is different
+next_state.set_if_neq(GameState::Playing);
+```
 
 ### Color Operations
 
-Direct color arithmetic operations aren't supported in Bevy 0.17:
+Use `LinearRgba` for mathematical operations:
 
 ```rust
-// ❌ Doesn't compile
-let emissive = color * 0.5;
-let darker = color - 0.2;
+// Create colors
+let color = Color::srgb(0.8, 0.2, 0.2);
 
-// ✅ Extract components manually
-let emissive = Color::srgb(
-    color.to_srgba().red * 0.5,
-    color.to_srgba().green * 0.5,
-    color.to_srgba().blue * 0.5,
-);
-
-// Or use LinearRgba for math operations
+// For math operations, convert to LinearRgba
 let linear = color.to_linear();
 let dimmed = LinearRgba::rgb(
     linear.red * 0.5,
     linear.green * 0.5,
     linear.blue * 0.5,
 );
+
+// Convert back if needed
+let dimmed_color = Color::from(dimmed);
 ```
 
-**Error symptoms:**
-- `cannot multiply Color by {float}`
-- `no implementation for Color * f32`
+### Gizmos
 
-**Solution:** Convert to component form or use `LinearRgba` for mathematical operations.
+```rust
+// Draw a cube
+gizmos.cube(transform, color);
+
+// Draw other shapes
+gizmos.line(start, end, color);
+gizmos.sphere(center, radius, color);
+```
+
+### Query Patterns
+
+**Some query methods return Result:**
+```rust
+// Handle potential query errors
+if let Ok(components) = entity_ref.get_components() {
+    // Process components
+}
+
+// Use ArchetypeQueryData for exact-size iterators
+fn system(query: Query<&Component, impl ArchetypeQueryData>) {
+    let count = query.iter().len();  // Exact size known
+}
+```
 
 ---
 
@@ -128,7 +206,7 @@ let dimmed = LinearRgba::rgb(
 
 **Location:**
 ```bash
-~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy-0.17.1/examples
+~/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bevy-0.18.0/examples
 ```
 
 **When to consult registry examples:**
@@ -176,7 +254,7 @@ pub struct CombatPlugin;
 impl Plugin for CombatPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_event::<DamageEvent>()
+            .add_observer(handle_damage_event)
             .add_systems(Startup, setup_combat)
             .add_systems(Update, (
                 process_damage,

@@ -1,59 +1,42 @@
 # Common Bevy Pitfalls Reference
 
-## 1. Using Old Event System in Bevy 0.17
+## 1. Event System Usage
 
 **❌ Problem:**
-```rust
-// Bevy 0.15/0.16 event system doesn't work in 0.17
-#[derive(Event)]
-struct MyEvent { data: String }
-
-app.add_event::<MyEvent>()
-   .add_systems(Update, handle_event);
-
-fn handle_event(mut events: EventReader<MyEvent>) { /* ... */ }
-fn trigger(mut events: EventWriter<MyEvent>) { /* ... */ }
-```
-
-**Symptoms:**
-- Compilation error: `MyEvent is not a Message`
-- `method 'send' not found for MessageWriter`
-- `method 'read' not found for MessageReader`
+Using old-style event readers/writers instead of observers.
 
 **✅ Solution:**
-Migrate to the observer pattern:
+Use the observer pattern:
 ```rust
-// Bevy 0.17 observer pattern
 #[derive(Event, Clone)]  // Must derive Clone!
 struct MyEvent { data: String }
 
-app.add_observer(handle_event);  // Use observer, not system
+// Register observer
+app.add_observer(handle_event);
 
+// Handler with Trigger
 fn handle_event(
-    trigger: Trigger<MyEvent>,  // Trigger parameter
+    trigger: Trigger<MyEvent>,
     // ... other params
 ) {
     let event = trigger.event();
 }
 
+// Trigger through commands
 fn trigger_event(mut commands: Commands) {
     commands.trigger(MyEvent { data: "test".into() });
 }
 ```
 
-See `references/bevy_specific_tips.md` for complete migration guide.
+See `references/bevy_specific_tips.md` for complete event patterns.
 
-## 2. Querying Material Handles in Bevy 0.17
+## 2. Querying Material Handles
 
 **❌ Problem:**
 ```rust
-// Bevy 0.15/0.16 pattern doesn't work in 0.17
+// Materials are not directly queryable
 Query<&Handle<StandardMaterial>>
 ```
-
-**Symptoms:**
-- `Handle<StandardMaterial> is not a Component`
-- Query trait bounds not satisfied
 
 **✅ Solution:**
 Use the `MeshMaterial3d` wrapper:
@@ -82,7 +65,7 @@ Always add to `main.rs`:
 .add_systems(Update, my_new_system)
 ```
 
-## 2. Borrowing Conflicts
+## 4. Borrowing Conflicts
 
 **❌ Problem:**
 ```rust
@@ -101,25 +84,7 @@ if let Ok([mut a, mut b]) = query.get_many_mut([entity_a, entity_b]) {
 }
 ```
 
-## 3. Infinite Loops with Events
-
-**❌ Problem:**
-```rust
-// System reads and writes same event type
-fn system(
-    mut events: EventWriter<MyEvent>,
-    reader: EventReader<MyEvent>,
-) {
-    for event in reader.read() {
-        events.send(MyEvent);  // Infinite loop!
-    }
-}
-```
-
-**✅ Solution:**
-Use different event types or add termination condition.
-
-## 4. Not Using Changed<T>
+## 5. Not Using Changed<T>
 
 **❌ Problem:**
 ```rust
@@ -141,7 +106,7 @@ fn system(query: Query<&BigFive, Changed<BigFive>>) {
 }
 ```
 
-## 5. Entity Queries After Despawn
+## 6. Entity Queries After Despawn
 
 **❌ Problem:**
 ```rust
@@ -158,7 +123,7 @@ if let Ok(component) = query.get(entity) {
 }
 ```
 
-## 6. Material/Asset Handle Confusion
+## 7. Material/Asset Handle Confusion
 
 **❌ Problem:**
 ```rust
@@ -170,12 +135,13 @@ materials.add(StandardMaterial { .. });  // Handle dropped!
 ```rust
 let material_handle = materials.add(StandardMaterial { .. });
 commands.spawn((
+    Mesh3d(mesh_handle),
     MeshMaterial3d(material_handle),
     // ...
 ));
 ```
 
-## 7. System Ordering Issues
+## 8. System Ordering Issues
 
 **❌ Problem:**
 ```rust
@@ -201,7 +167,7 @@ Order systems by dependencies:
 ))
 ```
 
-## 8. Not Filtering Queries Early
+## 9. Not Filtering Queries Early
 
 **❌ Problem:**
 ```rust
@@ -214,4 +180,114 @@ Query<(&A, Option<&B>, Option<&C>)>
 ```rust
 // Filter in query (efficient)
 Query<&A, (With<B>, Without<C>)>
+```
+
+## 10. BorderRadius as Separate Component
+
+**❌ Problem:**
+```rust
+// BorderRadius is not a component
+commands.spawn((
+    Node { /* ... */ },
+    BorderRadius::all(Val::Px(8.0)),  // Won't work
+));
+```
+
+**✅ Solution:**
+BorderRadius is a field on Node:
+```rust
+commands.spawn((
+    Node {
+        border_radius: BorderRadius::all(Val::Px(8.0)),
+        ..default()
+    },
+    BackgroundColor(Color::WHITE),
+));
+```
+
+## 11. LineHeight in TextFont
+
+**❌ Problem:**
+```rust
+// LineHeight is not part of TextFont
+TextFont {
+    font_size: 16.0,
+    line_height: LineHeight::Relative(1.2),  // Won't compile
+    ..default()
+}
+```
+
+**✅ Solution:**
+LineHeight is a separate component:
+```rust
+commands.spawn((
+    Text::new("Hello"),
+    TextFont { font_size: 16.0, ..default() },
+    LineHeight::Relative(1.2),  // Separate component
+));
+```
+
+## 12. State Transitions Fire on Same State
+
+**❌ Problem:**
+```rust
+// This fires OnExit/OnEnter even if already in that state
+next_state.set(GameState::Playing);
+```
+
+**✅ Solution:**
+Use `set_if_neq()` to only transition if state differs:
+```rust
+next_state.set_if_neq(GameState::Playing);
+```
+
+## 13. Query Methods Returning Results
+
+**❌ Problem:**
+```rust
+// Some query methods now return Result
+let components = entity_ref.get_components();  // May fail
+```
+
+**✅ Solution:**
+Handle the Result properly:
+```rust
+if let Ok(components) = entity_ref.get_components() {
+    // Process components
+}
+```
+
+## 14. Using Entity::row() Instead of index()
+
+**❌ Problem:**
+```rust
+// Old terminology
+let row = entity.row();
+```
+
+**✅ Solution:**
+Use current terminology:
+```rust
+let index = entity.index();
+```
+
+## 15. GlobalAmbientLight vs AmbientLight
+
+**❌ Problem:**
+```rust
+// Mixing up ambient light types
+app.insert_resource(AmbientLight { /* ... */ });  // Wrong for global
+```
+
+**✅ Solution:**
+Use correct type for your use case:
+```rust
+// For scene-wide ambient light
+app.insert_resource(GlobalAmbientLight {
+    color: Color::WHITE,
+    brightness: 0.2,
+});
+
+// For entity-specific ambient
+commands.spawn(AmbientLight { /* ... */ });
 ```

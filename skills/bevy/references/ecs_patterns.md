@@ -119,13 +119,24 @@ fn system(
 ```rust
 fn system(
     mut query: Query<&mut BigFive>,
-    events: EventReader<CastSpellEvent>,
+    trigger: Trigger<CastSpellEvent>,
 ) {
-    for event in events.read() {
-        if let Ok([mut source, mut target]) =
-            query.get_many_mut([event.source, event.target])
-        {
-            // Can mutate both at once
+    let event = trigger.event();
+    if let Ok([mut source, mut target]) =
+        query.get_many_mut([event.source, event.target])
+    {
+        // Can mutate both at once
+    }
+}
+```
+
+**6. Handling Query Results**
+Some query methods return `Result`:
+```rust
+fn system(world: &World) {
+    if let Ok(entity_ref) = world.get_entity(entity) {
+        if let Ok(components) = entity_ref.get_components() {
+            // Process components
         }
     }
 }
@@ -223,38 +234,40 @@ pub fn check_thresholds(
 }
 ```
 
-### Event-Driven Pattern
+### Event-Driven Pattern (Observer)
 
 **Problem:** Systems need to communicate without tight coupling.
 
 **Solution:**
 ```rust
-// Define event
-#[derive(Event)]
+// Define event (must derive Clone!)
+#[derive(Event, Clone)]
 pub struct SpellCastEvent {
     pub caster: Entity,
     pub target: Entity,
     pub spell_type: SpellType,
 }
 
-// Writer system
+// Register observer in plugin
+app.add_observer(handle_spell_cast);
+
+// Trigger system
 pub fn cast_spell(
     input: Res<ButtonInput<KeyCode>>,
-    mut events: EventWriter<SpellCastEvent>,
+    mut commands: Commands,
 ) {
     if input.just_pressed(KeyCode::Space) {
-        events.send(SpellCastEvent { /* ... */ });
+        commands.trigger(SpellCastEvent { /* ... */ });
     }
 }
 
-// Reader system
-pub fn process_spells(
-    mut events: EventReader<SpellCastEvent>,
+// Observer handler
+pub fn handle_spell_cast(
+    trigger: Trigger<SpellCastEvent>,
     mut query: Query<&mut BigFive>,
 ) {
-    for event in events.read() {
-        // Process spell
-    }
+    let event = trigger.event();
+    // Process spell using event.caster, event.target, etc.
 }
 ```
 
