@@ -6,14 +6,6 @@ Large swaths have been takem from terma: https://github.com/bfollington/terma/tr
 
 ## Claude Code Slash Commands
 
-### `/anthropic` Commands
-
-- **`/apply-thinking-to`** - Expert prompt engineering specialist that applies Anthropic's extended thinking patterns to enhance prompts with advanced reasoning frameworks
-  - Transforms prompts using progressive reasoning structure (open-ended → systematic)
-  - Applies sequential analytical frameworks and systematic verification with test cases
-  - Includes constraint optimization, bias detection, and extended thinking budget management
-  - Usage: `/apply-thinking-to @/path/to/prompt-file.md`
-
 ### `/ccusage` Commands
 
 - **`/ccusage-daily`** - Generates comprehensive Claude Code usage cost analysis and statistics
@@ -47,22 +39,6 @@ Large swaths have been takem from terma: https://github.com/bfollington/terma/tr
   - Usage: `/secure-prompts @suspicious_file.txt` or `/secure-prompts "content to analyze"`
   - Example prompt injection prompts at `.claude/commands/security/test-examples` that you can run `/secure-prompts` against.
   - Example generated report for `/secure-prompts .claude/commands/security/test-examples/test-encoding-attacks.md` [here](reports/secure-prompts/security-analysis_20250719_072359.md)
-
-### `/promptengineering` Commands
-
-- **`/convert-to-test-driven-prompt`** - Transform requests into Test-Driven Development style prompts
-  - Defines explicit test cases with Given/When/Then format
-  - Includes success criteria and edge cases
-  - Structures prompts for red-green-refactor cycle
-  - Creates measurable, specific test scenarios
-  - Usage: `/convert-to-test-driven-prompt "Add user authentication feature"`
-
-- **`/batch-operations-prompt`** - Optimize prompts for multiple file operations and parallel processing
-  - Identifies parallelizable tasks to maximize efficiency
-  - Groups operations by conflict potential
-  - Integrates with TodoWrite for task management
-  - Includes validation steps between batch operations
-  - Usage: `/batch-operations-prompt "Update all API calls to use new auth header"`
 
 ## Claude Code Skills
 
