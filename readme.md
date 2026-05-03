@@ -3,6 +3,7 @@ Some of the files were taken from: https://github.com/centminmod/my-claude-code-
 design reviewer comes from here: https://github.com/OneRedOak/claude-code-workflows
 also thanks to Jeff for the second-opinion command.
 Large swaths have been takem from terma: https://github.com/bfollington/terma/tree/main
+The `grill-me`, `to-issues`, `ubiquitous-language`, `tdd`, and `improve-codebase-architecture` skills are taken from Matt Pocock's collection: https://github.com/mattpocock/skills (MIT)
 
 ## Claude Code Slash Commands
 
@@ -55,6 +56,16 @@ Automatically sets up Python projects with nix/direnv and uv for seamless enviro
 - Updates `.gitignore` with appropriate entries
 
 **Usage:** Simply ask Claude to "set up a new Python project" or "create a Python environment with nix and uv"
+
+### Skills from [mattpocock/skills](https://github.com/mattpocock/skills)
+
+Pulled verbatim from Matt Pocock's collection (MIT-licensed). These pair well with the workflow he describes in *Claude Code for Real Engineers*.
+
+- **`grill-me`** — Interview the user relentlessly about a plan or design until reaching shared understanding, walking each branch of the decision tree one question at a time.
+- **`to-issues`** — Break a plan, spec, or PRD into independently-grabbable GitHub issues using tracer-bullet vertical slices.
+- **`ubiquitous-language`** — Extract a DDD-style ubiquitous-language glossary from the current conversation, flagging ambiguities and proposing canonical terms. Saves to `UBIQUITOUS_LANGUAGE.md`.
+- **`tdd`** — Test-driven development with red-green-refactor loop. Includes references on `tests`, `mocking`, `interface-design`, `deep-modules`, and `refactoring`.
+- **`improve-codebase-architecture`** — Find "deepening" opportunities in a codebase: refactors that turn shallow modules into deep ones for testability and AI-navigability.
 
 ## Claude Code Plan Weekly Rate Limits
 
