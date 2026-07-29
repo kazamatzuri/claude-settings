@@ -57,6 +57,16 @@ Automatically sets up Python projects with nix/direnv and uv for seamless enviro
 
 **Usage:** Simply ask Claude to "set up a new Python project" or "create a Python environment with nix and uv"
 
+### `ste-writing`
+
+Rewrites prose into ASD-STE100 Simplified Technical English to strip "AI slop": short common words, active voice, one instruction per sentence, no semicolons, no em dashes, no marketing adjectives. Applies to docs, READMEs, PR bodies, Linear tickets, runbooks, and error messages — never to code.
+
+Two modes: **strict** (procedures, runbooks, error messages — every rule plus both length caps) and **STE-flavored** (default, general prose — sentence and voice discipline without the ~900-word vocabulary lockdown). Ends with a six-point self-lint pass before returning text.
+
+Pairs with `anti-ai-tropes` and `humanizer`: those two diagnose AI tells in existing text, this one prescribes the standard for writing it.
+
+Adapted from Woosal's version: https://github.com/woosal1337/blog/blob/main/videos/ep01-the-cure-for-ai-slop/ste-writing-skill.md
+
 ### Skills from [mattpocock/skills](https://github.com/mattpocock/skills)
 
 Pulled verbatim from Matt Pocock's collection (MIT-licensed). These pair well with the workflow he describes in *Claude Code for Real Engineers*.
